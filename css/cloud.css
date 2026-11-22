@@ -1,0 +1,52 @@
+.search-row { margin-bottom:14px; }
+.search-field { display:flex;align-items:center;gap:10px;height:52px;padding:0 16px;border:1px solid var(--border);border-radius:14px;background:var(--surface); }
+.search-field input { width:100%;border:0;outline:0;background:transparent;color:var(--text); }
+.filter-panel {
+  display:grid;
+  grid-template-columns:repeat(6,minmax(0,1fr));
+  gap:10px;
+  align-items:end;
+  margin-bottom:22px;
+  padding:14px;
+  border:1px solid var(--border);
+  border-radius:16px;
+  background:var(--surface);
+}
+.filter-panel label { display:grid;gap:7px;color:var(--muted);font-size:12px;font-weight:800; }
+.filter-panel select,.filter-panel input { min-height:42px; }
+.exam-grid { display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px; }
+.exam-card {
+  position:relative;
+  display:flex;
+  flex-direction:column;
+  min-height:260px;
+  overflow:hidden;
+  border:1px solid var(--border);
+  border-radius:var(--radius);
+  background:var(--surface);
+  box-shadow:0 5px 20px rgba(33,39,58,.03);
+  transition:.18s ease;
+}
+.exam-card:hover { transform:translateY(-3px); box-shadow:var(--shadow); border-color:color-mix(in srgb,var(--primary) 35%,var(--border)); }
+.exam-card-header { display:flex;justify-content:space-between;align-items:start;padding:18px 18px 8px; }
+.subject-pill { max-width:70%;border-radius:999px;padding:7px 10px;background:var(--primary-soft);color:var(--primary-strong);font-size:12px;font-weight:800; }
+.card-actions { display:flex;gap:6px; }
+.card-icon { width:38px;height:38px;border:1px solid var(--border);border-radius:50%;background:var(--surface);color:var(--muted); }
+.card-icon.active { color:var(--primary);border-color:var(--primary);background:var(--primary-soft); }
+.exam-card-body { flex:1;padding:10px 18px 18px; }
+.exam-card h2 { margin:7px 0 12px;font-size:21px;line-height:1.25;letter-spacing:-.02em; }
+.exam-meta { display:grid;gap:7px;color:var(--muted);font-size:13px; }
+.exam-meta strong { color:var(--text); }
+.exam-card-footer { display:flex;gap:8px;padding:12px 18px;border-top:1px solid var(--border); }
+.exam-card-footer button { flex:1; }
+.viewer-body { min-height:500px;background:#0f172a;color:white; }
+.pdf-frame { width:100%;height:70vh;border:0; }
+.image-viewer { display:grid;place-items:center;min-height:500px;padding:20px;background:#111827; }
+.image-viewer img { max-width:100%;max-height:65vh;object-fit:contain;border-radius:10px; }
+.image-controls { display:flex;justify-content:center;align-items:center;gap:16px;padding:12px;background:var(--surface); }
+.viewer-info { display:flex;flex-wrap:wrap;gap:14px;padding:16px 20px;border-bottom:1px solid var(--border);color:var(--muted);font-size:13px; }
+.viewer-info strong { color:var(--text); }
+.report-form { display:grid;gap:14px;padding:20px; }
+.report-form textarea { min-height:110px;resize:vertical;padding:12px;border:1px solid var(--border);border-radius:12px;background:var(--surface);color:var(--text); }
+@media (max-width:1050px) { .exam-grid{grid-template-columns:repeat(2,minmax(0,1fr));}.filter-panel{grid-template-columns:repeat(3,minmax(0,1fr));} }
+@media (max-width:620px) { .exam-grid{grid-template-columns:1fr}.filter-panel{grid-template-columns:1fr}.exam-card{min-height:240px}.viewer-body,.image-viewer{min-height:400px}.pdf-frame{height:65vh} }

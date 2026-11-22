@@ -1,0 +1,65 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function signedIn() {
+      return request.auth != null;
+    }
+
+    function isAdmin() {
+      return signedIn() && request.auth.token.admin == true;
+    }
+
+    match /users/{uid} {
+      allow read: if isAdmin();
+      allow create, update: if signedIn() && request.auth.uid == uid
+        && request.resource.data.keys().hasOnly(['createdAt', 'lastSeenAt']);
+
+      match /favorites/{examId} {
+        allow read: if signedIn() && request.auth.uid == uid;
+        allow create: if signedIn() && request.auth.uid == uid
+          && request.resource.data.keys().hasOnly(['examId', 'createdAt'])
+          && request.resource.data.examId == examId;
+        allow update, delete: if signedIn() && request.auth.uid == uid;
+      }
+    }
+
+    match /exams/{examId} {
+      allow get: if isAdmin() || (resource.data.status == 'approved');
+      allow list: if isAdmin() || resource.data.status == 'approved';
+      allow create: if signedIn()
+        && request.resource.data.status == 'pending'
+        && request.resource.data.uploaderUid == request.auth.uid
+        && request.resource.data.subject is string
+        && request.resource.data.topic is string
+        && request.resource.data.teacher is string
+        && request.resource.data.examClass is string
+        && request.resource.data.uploaderClass is string
+        && request.resource.data.fileType in ['pdf', 'image']
+        && request.resource.data.files is list
+        && request.resource.data.files.size() > 0
+        && request.resource.data.hash is string
+        && request.resource.data.favoriteCount == 0;
+
+      allow update: if isAdmin()
+        || (signedIn()
+          && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['favoriteCount'])
+          && ((request.resource.data.favoriteCount == resource.data.favoriteCount + 1)
+            || (request.resource.data.favoriteCount == resource.data.favoriteCount - 1)));
+      allow delete: if isAdmin();
+    }
+
+    match /reports/{reportId} {
+      allow read: if isAdmin();
+      allow create: if signedIn()
+        && !exists(/databases/$(database)/documents/reports/$(reportId))
+        && reportId == request.auth.uid + '_' + request.resource.data.examId
+        && request.resource.data.reporterUid == request.auth.uid
+        && request.resource.data.status == 'open'
+        && request.resource.data.reason is string
+        && request.resource.data.description is string;
+      allow update: if isAdmin();
+      allow delete: if isAdmin();
+    }
+  }
+}

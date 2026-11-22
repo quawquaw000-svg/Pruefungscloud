@@ -1,0 +1,33 @@
+rules_version = '2';
+
+service firebase.storage {
+  match /b/{bucket}/o {
+    function signedIn() {
+      return request.auth != null;
+    }
+
+    function isAdmin() {
+      return signedIn() && request.auth.token.admin == true;
+    }
+
+    match /exams/{uid}/{examId}/{fileName} {
+      allow create: if signedIn()
+        && request.auth.uid == uid
+        && request.resource.size < 20 * 1024 * 1024
+        && request.resource.contentType in [
+          'application/pdf',
+          'image/jpeg',
+          'image/png',
+          'image/webp'
+        ];
+
+      allow read: if isAdmin()
+        || (signedIn() && request.auth.uid == uid)
+        || (signedIn()
+          && firestore.get(/databases/(default)/documents/exams/$(examId)).data.status == 'approved');
+
+      allow delete: if isAdmin();
+      allow update: if false;
+    }
+  }
+}
